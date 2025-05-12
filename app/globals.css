@@ -284,7 +284,7 @@
   }
 
   .form-label {
-    @apply text-14 w-full max-w-[280px] font-medium text-gray-700;
+    @apply text-14 pb-3 w-full max-w-[280px] font-medium text-gray-700;
   }
 
   .form-message {
