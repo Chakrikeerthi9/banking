@@ -6,9 +6,9 @@ import { cookies } from "next/headers";
 import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
 
-import { plaidClient } from '@/lib/plaid';
+// import { plaidClient } from '@/lib/plaid';
 import { revalidatePath } from "next/cache";
-import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
+// import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
 
 const {
   APPWRITE_DATABASE_ID: DATABASE_ID,
@@ -69,27 +69,28 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
 
     if(!newUserAccount) throw new Error('Error creating user')
 
-    const dwollaCustomerUrl = await createDwollaCustomer({
-      ...userData,
-      type: 'personal'
-    })
-
-    if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer')
-
-    const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
-
-    const newUser = await database.createDocument(
-      DATABASE_ID!,
-      USER_COLLECTION_ID!,
-      ID.unique(),
-      {
-        ...userData,
-        userId: newUserAccount.$id,
-        dwollaCustomerId,
-        dwollaCustomerUrl
-      }
-    )
-
+      // const dwollaCustomerUrl = await createDwollaCustomer({
+      //   ...userData,
+      //   type: 'personal'
+      // })
+  
+      // if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer')
+  
+      // const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+  
+      // const newUser = await database.createDocument(
+      //   DATABASE_ID!,
+      //   USER_COLLECTION_ID!,
+      //   ID.unique(),
+      //   {
+      //     ...userData,
+      //     userId: newUserAccount.$id,
+      //     dwollaCustomerId,
+      //     dwollaCustomerUrl
+      //   }
+      // )
+  
+    
     const session = await account.createEmailPasswordSession(email, password);
 
     cookies().set("appwrite-session", session.secret, {
