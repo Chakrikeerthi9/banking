@@ -3,12 +3,13 @@
 import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { cookies } from "next/headers";
-import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
-import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
+import { encryptId, extractCustomerIdFromUrl, parseStringify, authFormSchema } from "../utils";
+// import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
 
 // import { plaidClient } from '@/lib/plaid';
 import { revalidatePath } from "next/cache";
 // import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
+import { z } from "zod";
 
 const {
   APPWRITE_DATABASE_ID: DATABASE_ID,
@@ -37,7 +38,7 @@ export const signIn = async ({ email, password }: signInProps) => {
     const { account } = await createAdminClient();
     const session = await account.createEmailPasswordSession(email, password);
 
-    cookies().set("appwrite-session", session.secret, {
+    (await cookies()).set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
@@ -52,8 +53,8 @@ export const signIn = async ({ email, password }: signInProps) => {
   }
 }
 
-export const signUp = async ({ password, ...userData }: SignUpParams) => {
-  const { email, firstName, lastName } = userData;
+export const signUp = async (data: z.infer<ReturnType<typeof authFormSchema>>) => {
+  const { email, firstName, lastName, password } = data;
   
   let newUserAccount;
 
@@ -93,14 +94,14 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
     
     const session = await account.createEmailPasswordSession(email, password);
 
-    cookies().set("appwrite-session", session.secret, {
+    (await cookies()).set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
       secure: true,
     });
 
-    return parseStringify(newUser);
+    return parseStringify(newUserAccount);
   } catch (error) {
     console.error('Error', error);
   }
@@ -124,7 +125,7 @@ export const logoutAccount = async () => {
   try {
     const { account } = await createSessionClient();
 
-    cookies().delete('appwrite-session');
+    (await cookies()).delete('appwrite-session');
 
     await account.deleteSession('current');
   } catch (error) {

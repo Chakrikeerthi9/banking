@@ -28,7 +28,7 @@ import { useRouter } from 'next/navigation'
 
 const AuthForm = ({ type }: {type: string}) => {
     const router = useRouter()
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(false)
 
     // 1. Define your form.
@@ -36,6 +36,15 @@ const AuthForm = ({ type }: {type: string}) => {
     resolver: zodResolver(authFormSchema(type)),
     defaultValues: {
       email: "",
+      password: "",
+      lastName: "",
+      firstName: "",
+      ssn: "",
+      address1: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      dateOfBirth: "",
     },
   })
  
@@ -49,6 +58,9 @@ const AuthForm = ({ type }: {type: string}) => {
 
       if(type === 'sign-up'){
         const newUser = await signUp(data);
+        setUser([...user, newUser])
+        setIsLoading(false)
+        console.log(user)
       }
       if(type === 'sign-in'){
         // const response = await signIn({
@@ -116,6 +128,7 @@ const AuthForm = ({ type }: {type: string}) => {
                           <CustomInput control={form.control} name="lastName" label="Last Name" placeholder={"Enter your last name..."} />
                         </div>
                         <CustomInput control={form.control} name="address1" label="Address" placeholder={"Enter your address..."} />
+                        <CustomInput control={form.control} name="city" label="City" placeholder={"Enter your city..."} />
                         <div className='flex gap-4'>
                           <CustomInput control={form.control} name="state" label="State" placeholder={"Ex: NY"} />
                           <CustomInput control={form.control} name="postalCode" label="Postal Code" placeholder={"Ex: 11101"} />
@@ -132,6 +145,7 @@ const AuthForm = ({ type }: {type: string}) => {
                     <CustomInput control={form.control} name="password" label="Password" placeholder={"Enter your password..."} />
                     <div className='flex flex-col gap-4'>
                       <Button type="submit" className='form-btn' disabled={isLoading}>
+                        
                         {
                           isLoading ? (
                             <>

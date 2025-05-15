@@ -31,8 +31,9 @@ const CustomInput = ({control, name, label, placeholder}: CustomInputProps) => {
                                     placeholder={placeholder}
                                     className='input-class'
                                     id={name}
-                                    type={name === "password" ? "password" : name === "email" ? "email" : name}
+                                    type={name === "password" ? "password" : name === "email" ? "email" : ''}
                                     {...field}
+                                    value={field.value?? ''}
                                 />
                             </FormControl>
                             <FormMessage className='form-message' />
